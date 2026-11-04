@@ -1,0 +1,388 @@
+@page "/rules/{RuleTypeId}/drafts/new"
+@page "/rules/{RuleTypeId}/drafts/{Id:guid}"
+@using System.Text.Json
+@using eShopAdmin.BusinessRules
+@using eShopAdmin.Catalog
+@using eShopAdmin.Components.Pages.Rules.Forms
+@using eShopAdmin.Rules
+@inject BusinessRulesClient Client
+@inject CatalogLookupClient Catalog
+@inject NavigationManager Navigation
+
+@if (ruleType is not null)
+{
+    <PageTitle>@PageHeading · @ruleType.Id @ruleType.Name · eShopAdmin</PageTitle>
+
+    <p class="breadcrumb"><a href="rules">All rules</a> / <a href="@HistoryUrl">@ruleType.Name</a></p>
+    <h1>@PageHeading</h1>
+    <p>@ruleType.Id @ruleType.Name</p>
+
+    @if (Input is null || editContext is null)
+    {
+        <p class="note">@ReadOnlyNote</p>
+        @if (version is not null)
+        {
+            <dl class="summary">
+                <dt>Status</dt>
+                <dd>@version.Status</dd>
+                <dt>Value</dt>
+                <dd>@ParameterSummary.Describe(ruleType.Id, version.Parameters)</dd>
+                <dt>Effective (UTC)</dt>
+                <dd>
+                    @RuleStatusSummary.FormatUtc(version.EffectiveFrom)
+                    to @(version.EffectiveTo is { } to ? RuleStatusSummary.FormatUtc(to) : "no end")
+                </dd>
+            </dl>
+            @if (RawJson is not null)
+            {
+                <details>
+                    <summary>Raw parameters</summary>
+                    <pre>@RawJson</pre>
+                </details>
+            }
+        }
+        <p><a href="@HistoryUrl">Back to history</a></p>
+    }
+    else
+    {
+        @if (summary.Count > 0 || fieldErrorCount > 0)
+        {
+            <div id="draft-error-summary" class="error-summary" role="alert" tabindex="-1" data-focus-on-load>
+                <h2>The draft wasn't saved</h2>
+                @if (fieldErrorCount > 0)
+                {
+                    <p>Fix the fields with errors below.</p>
+                }
+                @if (summary.Count > 0)
+                {
+                    <ul>
+                        @foreach (var message in summary)
+                        {
+                            <li>@message</li>
+                        }
+                    </ul>
+                }
+            </div>
+        }
+
+        <div role="status" class="status-message">@statusText</div>
+
+        @if (isNew)
+        {
+            <p><a href="@HistoryUrl/drafts/new?from=default">Start from built-in default</a></p>
+        }
+
+        @if (startNote is not null)
+        {
+            <p class="note">@startNote</p>
+        }
+
+        @if (catalogUnavailable)
+        {
+            <p class="note">@CatalogUnavailableCopy</p>
+        }
+
+        <EditForm EditContext="editContext" FormName="@DraftForm" OnSubmit="HandleSubmitAsync" Enhance novalidate>
+            @* First submit button in tree order is what Enter in a field presses, so it must be Save. *@
+            <button type="submit" class="default-submit" name="@DraftAction.FieldName" value="save" tabindex="-1" aria-hidden="true">Save draft</button>
+
+            <h2>Value</h2>
+            @switch (ruleType.Id)
+            {
+                case RuleForms.GracePeriod:
+                    <GracePeriodFields Form="Input.GracePeriod" NamePrefix="@NameOf(nameof(DraftInput.GracePeriod))" />
+                    break;
+                case RuleForms.ShortfallPolicy:
+                    <ShortfallPolicyFields Form="Input.ShortfallPolicy" NamePrefix="@NameOf(nameof(DraftInput.ShortfallPolicy))" />
+                    break;
+                case RuleForms.ShippingFee:
+                    <ShippingFeeFields Form="Input.ShippingFee" NamePrefix="@NameOf(nameof(DraftInput.ShippingFee))" />
+                    break;
+                case RuleForms.PriceAdjustment:
+                    <PriceAdjustmentFields Form="Input.PriceAdjustment" NamePrefix="@NameOf(nameof(DraftInput.PriceAdjustment))"
+                                           Types="catalogTypes" Brands="catalogBrands" ItemNames="itemNames" />
+                    break;
+                case RuleForms.Promotion:
+                    <PromotionFields Form="Input.Promotion" NamePrefix="@NameOf(nameof(DraftInput.Promotion))"
+                                     Types="catalogTypes" Brands="catalogBrands" ItemNames="itemNames" />
+                    break;
+            }
+
+            <h2>Effective window</h2>
+            <EffectiveWindowFields Form="Input" NamePrefix="@InputName" StartsInPast="startsInPast" />
+
+            <div class="form-actions">
+                <button type="submit" name="@DraftAction.FieldName" value="save">Save draft</button>
+                <a href="@HistoryUrl">Cancel</a>
+            </div>
+        </EditForm>
+    }
+}
+
+@code {
+    private const string DraftForm = "draft";
+    private const string InputName = "Input";
+    private const string UnknownRuleTypeCopy = "This rule type isn't supported by this version of eShopAdmin. You can view it but not edit it.";
+    private const string CatalogUnavailableCopy = "Catalog names are unavailable right now. Enter ids instead.";
+    private const string OtherConflictCopy = "This version can't be changed any more: ";
+    private const string NotEditableCopy = "This version can't be edited because it is no longer a draft.";
+    private const string UnrecognisedShapeCopy = "This draft's value doesn't fit the form, so it can't be edited here without losing data.";
+
+    private RuleTypeDto? ruleType;
+    private RuleVersionDto? version;
+    private bool versionIsDraft;
+    private bool isNew;
+    private EditContext? editContext;
+    private ValidationMessageStore? messageStore;
+    private IReadOnlyList<CatalogOption>? catalogTypes;
+    private IReadOnlyList<CatalogOption>? catalogBrands;
+    private IReadOnlyDictionary<int, string>? itemNames;
+    private bool catalogUnavailable;
+    private bool startsInPast;
+    private string? startNote;
+    private string? statusText;
+    private int fieldErrorCount;
+    private readonly List<string> summary = [];
+
+    [Parameter]
+    public string RuleTypeId { get; set; } = string.Empty;
+
+    [Parameter]
+    public Guid? Id { get; set; }
+
+    [SupplyParameterFromQuery(Name = "from")]
+    public string? From { get; set; }
+
+    // The posted form, bound by the framework. It is null on GET.
+    [SupplyParameterFromForm(FormName = DraftForm)]
+    private DraftInput? Input { get; set; }
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string HistoryUrl => $"rules/{Uri.EscapeDataString(RuleTypeId)}";
+
+    private string PageHeading => isNew ? "New draft" : version is { } v ? $"Edit draft v{v.VersionNumber}" : "Edit draft";
+
+    private string? ReadOnlyNote => ruleType is { } type && !RuleForms.IsSupported(type.Id)
+        ? UnknownRuleTypeCopy
+        : !versionIsDraft ? NotEditableCopy : UnrecognisedShapeCopy;
+
+    private string? RawJson => version is { } v && v.Parameters.ValueKind != JsonValueKind.Undefined
+        ? JsonSerializer.Serialize(v.Parameters, new JsonSerializerOptions { WriteIndented = true, NewLine = "\n" })
+        : null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ct = HttpContext?.RequestAborted ?? default;
+        ruleType = (await Client.GetRuleTypesAsync(ct))
+            .FirstOrDefault(t => string.Equals(t.Id, RuleTypeId, StringComparison.Ordinal));
+
+        if (ruleType is null)
+        {
+            // Sets the 404 status and renders the router's NotFoundPage.
+            Navigation.NotFound();
+            return;
+        }
+
+        isNew = Id is null;
+        if (!RuleForms.IsSupported(ruleType.Id))
+        {
+            Input = null;
+            return;
+        }
+
+        var versions = await Client.GetVersionsAsync(ruleType.Id, ct);
+        var now = DateTimeOffset.UtcNow;
+
+        if (isNew)
+        {
+            Input ??= NewDraftInput(versions, now);
+        }
+        else
+        {
+            version = versions.FirstOrDefault(v => v.Id == Id);
+            if (version is null)
+            {
+                Navigation.NotFound();
+                ruleType = null;
+                return;
+            }
+
+            versionIsDraft = version.Status == RuleVersionStatus.Draft;
+            if (!versionIsDraft)
+            {
+                Input = null;
+                return;
+            }
+
+            Input ??= DraftInput.FromParameters(ruleType.Id, version.Parameters, version.EffectiveFrom, version.EffectiveTo);
+        }
+
+        if (Input is null)
+        {
+            return;
+        }
+
+        Input.ResolveTargets();
+        Input.ValidateWindow(now, out startsInPast);
+        await LoadCatalogAsync(ct);
+
+        editContext = new EditContext(Input);
+        messageStore = new ValidationMessageStore(editContext);
+    }
+
+    private DraftInput NewDraftInput(IReadOnlyList<RuleVersionDto> versions, DateTimeOffset now)
+    {
+        var start = DraftInput.RoundUpToMinute(now);
+        var startOffset = new DateTimeOffset(start);
+        var current = From == "default" ? null : RuleStatusSummary.From(versions, now).Current;
+
+        if (current is not null)
+        {
+            if (DraftInput.FromParameters(ruleType!.Id, current.Parameters, startOffset, null) is { } fromCurrent)
+            {
+                return fromCurrent;
+            }
+
+            startNote = "The current value doesn't fit the form, so this draft starts from the built-in default.";
+        }
+
+        return DraftInput.FromParameters(ruleType!.Id, ruleType.Default, startOffset, null)
+            ?? new DraftInput { EffectiveFromUtc = start };
+    }
+
+    private async Task LoadCatalogAsync(CancellationToken ct)
+    {
+        if (ruleType!.Id is not (RuleForms.PriceAdjustment or RuleForms.Promotion))
+        {
+            return;
+        }
+
+        var typesTask = Catalog.GetTypesAsync(ct);
+        var brandsTask = Catalog.GetBrandsAsync(ct);
+        var namesTask = Catalog.GetItemNamesAsync(Input!.ItemTargetIds(), ct);
+        await Task.WhenAll(typesTask, brandsTask, namesTask);
+
+        // A missing name is only a missing hint: ids not found, or Catalog down, show no name and no error.
+        itemNames = namesTask.Result;
+
+        // One missing list is enough to switch every target to numeric ids, so the pickers are never half there.
+        if (typesTask.Result is { } types && brandsTask.Result is { } brands)
+        {
+            catalogTypes = types;
+            catalogBrands = brands;
+        }
+        else
+        {
+            catalogUnavailable = true;
+        }
+    }
+
+    private async Task HandleSubmitAsync()
+    {
+        if (Input is null || editContext is null || messageStore is null || ruleType is null)
+        {
+            return;
+        }
+
+        messageStore.Clear();
+        summary.Clear();
+        statusText = null;
+        fieldErrorCount = 0;
+
+        var posted = HttpContext?.Request.Form[DraftAction.FieldName] ?? default;
+        if (DraftAction.Parse(posted.Count == 0 ? null : posted[0]) is not { } action)
+        {
+            return;
+        }
+
+        switch (action.Kind)
+        {
+            case DraftActionKind.Add:
+                Input.AddEntry(action.List!);
+                statusText = $"Added {Noun(action.List!)} {EntryCount(action.List!)}.";
+                break;
+            case DraftActionKind.Remove:
+                if (action.Index < EntryCount(action.List!))
+                {
+                    Input.RemoveEntry(action.List!, action.Index);
+                    statusText = $"Removed {Noun(action.List!)} {action.Index + 1}.";
+                }
+
+                break;
+            default:
+                await SaveAsync();
+                break;
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        var ct = HttpContext?.RequestAborted ?? default;
+
+        var windowErrors = Input!.ValidateWindow(DateTimeOffset.UtcNow, out startsInPast);
+        if (windowErrors.Count > 0)
+        {
+            ShowErrors(new FieldErrors(windowErrors, []));
+            return;
+        }
+
+        var result = isNew
+            ? await Client.CreateDraftAsync(Input.ToCreateRequest(ruleType!.Id), ct)
+            : await Client.UpdateDraftAsync(Id!.Value, Input.ToUpdateRequest(ruleType!.Id), ct);
+
+        switch (result)
+        {
+            case SaveDraftResult.Saved saved:
+                Navigation.NavigateTo($"{HistoryUrl}?{StatusBanner.DraftSavedQuery(saved.Version.VersionNumber)}");
+                break;
+            case SaveDraftResult.Invalid invalid:
+                ShowErrors(ValidationErrorMapper.Map(ruleType!.Id, invalid.Errors));
+                break;
+            case SaveDraftResult.Conflict conflict:
+                summary.Add(OtherConflictCopy + conflict.Detail);
+                break;
+            default:
+                // The draft or the rule type is gone.
+                Navigation.NotFound();
+                break;
+        }
+    }
+
+    private void ShowErrors(FieldErrors errors)
+    {
+        foreach (var (field, messages) in errors.ByField)
+        {
+            if (DraftFieldPath.Resolve(Input!, field) is { } identifier)
+            {
+                messageStore!.Add(identifier, messages);
+                fieldErrorCount += messages.Length;
+            }
+            else
+            {
+                // Never drop a message: one that has no input goes to the summary with its path.
+                summary.AddRange(messages.Select(m => $"{field[(field.IndexOf('.') + 1)..]}: {m}"));
+            }
+        }
+
+        summary.AddRange(errors.Summary);
+        editContext!.NotifyValidationStateChanged();
+    }
+
+    private int EntryCount(string list) => list switch
+    {
+        DraftInput.Entries => Input!.PriceAdjustment.Entries.Count,
+        DraftInput.LinePromotions => Input!.Promotion.LinePromotions.Count,
+        _ => Input!.Promotion.OrderPromotions.Count,
+    };
+
+    private static string Noun(string list) => list switch
+    {
+        DraftInput.Entries => "entry",
+        DraftInput.LinePromotions => "line promotion",
+        _ => "order promotion",
+    };
+
+    private static string NameOf(string property) => $"{InputName}.{property}";
+}

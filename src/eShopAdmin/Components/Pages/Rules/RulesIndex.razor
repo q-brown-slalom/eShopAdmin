@@ -1,0 +1,70 @@
+@page "/rules"
+@using eShopAdmin.BusinessRules
+@using eShopAdmin.Rules
+@inject BusinessRulesClient Client
+
+<PageTitle>Rules · eShopAdmin</PageTitle>
+
+<h1>Rules</h1>
+
+<table class="data-table">
+    <caption>Business rules, with the value in effect now, the next scheduled change and the number of drafts</caption>
+    <thead>
+        <tr>
+            <th scope="col">Rule</th>
+            <th scope="col">Changes prices</th>
+            <th scope="col">Current value</th>
+            <th scope="col">Scheduled</th>
+            <th scope="col">Drafts</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var row in rows)
+        {
+            <tr>
+                <th scope="row"><a href="rules/@Uri.EscapeDataString(row.Type.Id)">@row.Type.Id @row.Type.Name</a></th>
+                <td>@(row.Type.AffectsPrice ? "Yes" : "No")</td>
+                <td>
+                    @CurrentText(row)
+                    @if (!RuleForms.IsSupported(row.Type.Id))
+                    {
+                        <p class="note">@UnknownRuleTypeCopy</p>
+                    }
+                </td>
+                <td>@ScheduledText(row.Summary)</td>
+                <td>@row.Summary.DraftCount</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private const string UnknownRuleTypeCopy = "This rule type isn't supported by this version of eShopAdmin. You can view it but not edit it.";
+
+    private sealed record Row(RuleTypeDto Type, RuleStatusSummary Summary);
+
+    private IReadOnlyList<Row> rows = [];
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ct = HttpContext?.RequestAborted ?? default;
+        var types = (await Client.GetRuleTypesAsync(ct)).OrderBy(t => t.Id, StringComparer.Ordinal).ToList();
+        var versions = await Task.WhenAll(types.Select(t => Client.GetVersionsAsync(t.Id, ct)));
+
+        var now = DateTimeOffset.UtcNow;
+        rows = types.Select((t, i) => new Row(t, RuleStatusSummary.From(versions[i], now))).ToList();
+    }
+
+    private static string CurrentText(Row row) =>
+        row.Summary.Current is { } current
+            ? ParameterSummary.Describe(row.Type.Id, current.Parameters)
+            : "Built-in default";
+
+    private static string ScheduledText(RuleStatusSummary summary) =>
+        summary.NextScheduled is { } next
+            ? $"v{next.VersionNumber} from {RuleStatusSummary.FormatUtc(next.EffectiveFrom)} UTC"
+            : "—";
+}

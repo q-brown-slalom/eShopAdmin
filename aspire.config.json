@@ -1,0 +1,8 @@
+{
+  "appHost": {
+    "path": "src/eShopAdmin.AppHost/eShopAdmin.AppHost.csproj"
+  },
+  "sdk": {
+    "version": "13.6.0"
+  }
+}
