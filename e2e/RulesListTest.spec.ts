@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { EDITOR_STATE } from '../playwright.config';
+import { asPublisher, createGracePeriodDraft } from './rules';
 
 test('lists the five rule types', async ({ page }) => {
   await page.goto('/rules');
@@ -36,11 +37,18 @@ test('an unknown rule type is a 404 page', async ({ page }) => {
 test.describe('as an editor', () => {
   test.use({ storageState: EDITOR_STATE });
 
+  // Without a draft there is no Publish link to hide, so the check below would pass whatever the page did.
+  test.beforeAll(async ({ browser }, testInfo) => {
+    await asPublisher(browser, testInfo, (publisher) => createGracePeriodDraft(publisher, 13));
+  });
+
   test('editor sees history without Publish', async ({ page }) => {
     await page.goto('/rules/ORD-001');
 
-    await expect(page.getByRole('table', { name: /Versions of ORD-001/ }).or(page.getByText('No versions yet'))).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Publish' })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Publish' })).toHaveCount(0);
+    await expect(page.getByRole('table', { name: /Versions of ORD-001/ })).toBeVisible();
+    // The editor can edit the draft, so the row is there, and Publish isn't.
+    await expect(page.getByRole('link', { name: /^Edit draft version/ }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: /^Publish/ })).toHaveCount(0);
+    await expect(page.getByRole('button', { name: /^Publish/ })).toHaveCount(0);
   });
 });

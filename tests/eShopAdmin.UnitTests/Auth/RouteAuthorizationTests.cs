@@ -10,6 +10,18 @@ namespace eShopAdmin.UnitTests.Auth;
 public class RouteAuthorizationTests
 {
     [TestMethod]
+    public void PublishPageRequiresThePublishPolicy()
+    {
+        var page = typeof(Home).Assembly.GetType("eShopAdmin.Components.Pages.Rules.PublishVersion");
+        Assert.IsNotNull(page, "The publish page must exist.");
+
+        Assert.AreEqual(
+            "/rules/{RuleTypeId}/versions/{Id:guid}/publish",
+            page.GetCustomAttributes<RouteAttribute>().Single().Template);
+        Assert.AreEqual(AdminPolicies.Publish, page.GetCustomAttributes<AuthorizeAttribute>().Single().Policy);
+    }
+
+    [TestMethod]
     public void EveryRoutablePageRequiresAuthorizationExceptAccessDenied()
     {
         var routable = typeof(Home).Assembly.GetTypes()
