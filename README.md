@@ -77,7 +77,8 @@ to `main`; `markdownlint.yml` runs on pull requests only.
 - `markdownlint.yml` lints all Markdown with `.markdownlint.json`.
 - `playwright.yml` runs the E2E tests against both AppHosts in one job:
   1. It fails at once with a clear message when the repository variable `ESHOP_REPOSITORY` isn't set, then checks out
-     eShop (that repository, branch `main`) into `eshop/`.
+     eShop (that repository) into `eshop/`. It uses eShop's default branch, or the branch named by the optional
+     repository variable `ESHOP_REF`. That branch must contain eShop's `eshopadmin-url` parameter.
   2. It starts eShop's AppHost in the background with `ESHOP_USE_HTTP_ENDPOINTS=1` and
      `Parameters__eshopadmin-url=http://localhost:5250`, then waits up to 5 minutes for Identity.API
      (`http://localhost:5223/.well-known/openid-configuration`) and BusinessRules.API
