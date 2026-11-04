@@ -56,12 +56,35 @@ public static partial class ValidationErrorMapper
         var match = JsonPathPrefix().Match(message);
         if (!match.Success)
         {
-            return null;
+            return QuotedMemberField(message, formProperty);
         }
 
         text = message[match.Length..];
         return $"{formProperty}.{PascalCase(match.Groups["path"].Value)}";
     }
+
+    // The flat rule types (ORD-001, ORD-013, SHP-001) report "'member' must ..." instead of "path: ...". The message
+    // keeps its quoted member, so it still reads correctly next to the input. Members the form doesn't have fall through.
+    private static string? QuotedMemberField(string message, string formProperty)
+    {
+        var match = QuotedMemberPrefix().Match(message);
+        if (!match.Success)
+        {
+            return null;
+        }
+
+        var member = match.Groups["member"].Value;
+        return FlatMembers.TryGetValue(formProperty, out var members) && members.Contains(member, StringComparer.Ordinal)
+            ? $"{formProperty}.{PascalCase(member)}"
+            : null;
+    }
+
+    private static readonly Dictionary<string, string[]> FlatMembers = new(StringComparer.Ordinal)
+    {
+        [nameof(DraftInput.GracePeriod)] = ["minutes"],
+        [nameof(DraftInput.ShortfallPolicy)] = ["policy"],
+        [nameof(DraftInput.ShippingFee)] = ["fee", "freeShippingThreshold"],
+    };
 
     private static string? FormProperty(string ruleTypeId) => ruleTypeId switch
     {
@@ -81,4 +104,7 @@ public static partial class ValidationErrorMapper
 
     [GeneratedRegex(@"(?<=^|\.)[a-z]", RegexOptions.CultureInvariant)]
     private static partial Regex PathSegmentStart();
+
+    [GeneratedRegex(@"^'(?<member>[a-z]\w*)' ", RegexOptions.CultureInvariant)]
+    private static partial Regex QuotedMemberPrefix();
 }

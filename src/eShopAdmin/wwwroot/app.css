@@ -5,6 +5,7 @@
     --header-text: #ffffff;
     --accent: #0b5cad;
     --focus: #ffbf47;
+    --error: #b00020;
 }
 
 * {
@@ -170,4 +171,114 @@ main:focus {
     background: var(--accent);
     border-radius: 4px;
     text-decoration: none;
+}
+
+.breadcrumb {
+    margin: 0 0 0.5rem;
+}
+
+fieldset {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem 1rem;
+    border: 1px solid #6b7280;
+    border-radius: 4px;
+}
+
+fieldset.entry {
+    background: #f9fafb;
+}
+
+legend {
+    padding: 0 0.4rem;
+    font-weight: 600;
+}
+
+.field {
+    margin: 0 0 1rem;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+}
+
+.field input,
+.field select {
+    min-width: 16rem;
+    max-width: 100%;
+    padding: 0.4rem 0.5rem;
+    font: inherit;
+    color: var(--text);
+    background: var(--surface);
+    border: 2px solid #6b7280;
+    border-radius: 4px;
+}
+
+.field input.invalid,
+.field select.invalid {
+    border-color: var(--error);
+}
+
+.hint {
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+.validation-message {
+    margin: 0.25rem 0 0;
+    color: var(--error);
+    font-weight: 600;
+}
+
+.validation-message::before {
+    content: "Error: ";
+}
+
+.error-summary {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border: 3px solid var(--error);
+    border-radius: 4px;
+}
+
+.error-summary h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+}
+
+.error-summary ul {
+    margin: 0;
+}
+
+.default-submit {
+    position: absolute;
+    left: -9999px;
+}
+
+button {
+    padding: 0.4rem 1rem;
+    font: inherit;
+    color: var(--header-text);
+    background: var(--accent);
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button.secondary {
+    color: var(--accent);
+    background: var(--surface);
+}
+
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+pre {
+    white-space: pre-wrap;
 }

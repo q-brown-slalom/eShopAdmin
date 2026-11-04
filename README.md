@@ -60,6 +60,7 @@ npm run test:e2e
 | Variable | Default | Purpose |
 |----------|---------|---------|
 | `ADMIN_URL` | `https://localhost:7250` | Where eShopAdmin is served |
+| `CATALOG_URL` | `http://localhost:5222` | Where Catalog.API listens (the draft editor spec compares its type picker with it) |
 | `PUBLISHER_USERNAME` | `alice` | User with the `RulesPublisher` role |
 | `EDITOR_USERNAME` | `bob` | User with the `RulesEditor` role |
 | `PASSWORD` | none (required) | Password of both users |

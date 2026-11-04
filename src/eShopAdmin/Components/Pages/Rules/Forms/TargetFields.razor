@@ -1,0 +1,76 @@
+@inherits FieldsBase
+@using eShopAdmin.Catalog
+@using eShopAdmin.Rules
+
+@* Every control is always shown because static SSR can't swap them when "Applies to" changes. Only the one that matches it is used. *@
+<div class="field">
+    <label for="@IdOf("Kind")">Applies to</label>
+    <InputSelect id="@IdOf("Kind")" name="@NameOf("Kind")" @bind-Value="Form.Kind"
+                 aria-describedby="@Describe(Form, "Kind", ErrorIdOf("Kind"))">
+        <option value="@TargetForm.All">All products</option>
+        <option value="@TargetForm.Brand">One brand</option>
+        <option value="@TargetForm.Type">One product type</option>
+        <option value="@TargetForm.Item">One item</option>
+    </InputSelect>
+    <ValidationMessage For="() => Form.Kind" id="@ErrorIdOf("Kind")" />
+</div>
+
+@if (Types is not null && Brands is not null)
+{
+    <div class="field">
+        <label for="@IdOf("TypeId")">Target type</label>
+        <InputSelect id="@IdOf("TypeId")" name="@NameOf("TypeId")" @bind-Value="Form.TypeId"
+                     aria-describedby="@Describe(Form, "Id", ErrorIdOf("Id"), HintIdOf("TypeId"))">
+            <option value="">Choose a type</option>
+            @foreach (var option in Types)
+            {
+                <option value="@option.Id">@option.Name</option>
+            }
+        </InputSelect>
+        <p class="hint" id="@HintIdOf("TypeId")">Used when Applies to is One product type.</p>
+    </div>
+
+    <div class="field">
+        <label for="@IdOf("BrandId")">Target brand</label>
+        <InputSelect id="@IdOf("BrandId")" name="@NameOf("BrandId")" @bind-Value="Form.BrandId"
+                     aria-describedby="@Describe(Form, "Id", ErrorIdOf("Id"), HintIdOf("BrandId"))">
+            <option value="">Choose a brand</option>
+            @foreach (var option in Brands)
+            {
+                <option value="@option.Id">@option.Name</option>
+            }
+        </InputSelect>
+        <p class="hint" id="@HintIdOf("BrandId")">Used when Applies to is One brand.</p>
+    </div>
+
+    <div class="field">
+        <label for="@IdOf("ItemId")">Target item id</label>
+        <InputNumber id="@IdOf("ItemId")" name="@NameOf("ItemId")" @bind-Value="Form.ItemId"
+                     aria-describedby="@Describe(Form, "Id", ErrorIdOf("Id"), HintIdOf("ItemId"))" />
+        <p class="hint" id="@HintIdOf("ItemId")">Used when Applies to is One item.</p>
+    </div>
+}
+else
+{
+    <div class="field">
+        <label for="@IdOf("Id")">Target id</label>
+        <InputNumber id="@IdOf("Id")" name="@NameOf("Id")" @bind-Value="Form.Id"
+                     aria-describedby="@Describe(Form, "Id", ErrorIdOf("Id"), HintIdOf("Id"))" />
+        <p class="hint" id="@HintIdOf("Id")">The id of the brand, product type or item. Not used when Applies to is All products.</p>
+    </div>
+}
+
+<ValidationMessage For="() => Form.Id" id="@ErrorIdOf("Id")" />
+
+@code {
+    [Parameter, EditorRequired]
+    public TargetForm Form { get; set; } = default!;
+
+    /// <summary>Catalog product types by name, or null when Catalog is unavailable.</summary>
+    [Parameter]
+    public IReadOnlyList<CatalogOption>? Types { get; set; }
+
+    /// <summary>Catalog brands by name, or null when Catalog is unavailable.</summary>
+    [Parameter]
+    public IReadOnlyList<CatalogOption>? Brands { get; set; }
+}

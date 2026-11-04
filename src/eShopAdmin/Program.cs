@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using eShopAdmin.Auth;
 using eShopAdmin.BusinessRules;
+using eShopAdmin.Catalog;
 using eShopAdmin.Components;
 using eShopAdmin.ServiceDefaults;
 
@@ -10,6 +11,9 @@ builder.AddServiceDefaults();
 builder.AddAdminAuthentication();
 
 builder.Services.AddBusinessRulesClient();
+
+// Catalog only supplies names for the target pickers, so a slow or missing Catalog must not hold a page up.
+builder.Services.AddCatalogLookupClient();
 
 builder.Services.AddRazorComponents();
 builder.Services.AddCascadingAuthenticationState();

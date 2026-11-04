@@ -4,7 +4,7 @@ namespace eShopAdmin.Rules;
 
 public class PriceAdjustmentForm
 {
-    public List<PriceAdjustmentEntryForm> Entries { get; set; } = [];
+    public List<PriceAdjustmentEntryForm> Entries { get => field ??= []; set => field = value ?? []; }
 
     internal static PriceAdjustmentForm? FromJson(JsonElement json)
     {
@@ -49,7 +49,7 @@ public class PriceAdjustmentEntryForm
 
     public static readonly string[] Modes = [PercentOff, FixedPrice];
 
-    public TargetForm Target { get; set; } = new();
+    public TargetForm Target { get => field ??= new(); set => field = value ?? new(); }
 
     public string Mode { get; set; } = PercentOff;
 
@@ -74,7 +74,7 @@ public class PriceAdjustmentEntryForm
         writer.WriteStartObject();
         writer.WritePropertyName("target");
         Target.Write(writer);
-        writer.WriteString("mode", Mode);
+        writer.WriteString("mode", Mode ?? string.Empty);
         writer.WriteNumber("value", Value);
         writer.WriteEndObject();
     }

@@ -30,7 +30,7 @@ public class ShortfallPolicyForm
     internal void Write(Utf8JsonWriter writer)
     {
         writer.WriteStartObject();
-        writer.WriteString("policy", Policy);
+        writer.WriteString("policy", Policy ?? string.Empty);
         writer.WriteEndObject();
     }
 }

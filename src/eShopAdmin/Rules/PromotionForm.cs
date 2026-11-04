@@ -4,9 +4,9 @@ namespace eShopAdmin.Rules;
 
 public class PromotionForm
 {
-    public List<LinePromotionForm> LinePromotions { get; set; } = [];
+    public List<LinePromotionForm> LinePromotions { get => field ??= []; set => field = value ?? []; }
 
-    public List<OrderPromotionForm> OrderPromotions { get; set; } = [];
+    public List<OrderPromotionForm> OrderPromotions { get => field ??= []; set => field = value ?? []; }
 
     internal static PromotionForm? FromJson(JsonElement json)
     {
@@ -69,7 +69,7 @@ public class LinePromotionForm
 
     public static readonly string[] Kinds = [PercentOff, AmountOff];
 
-    public TargetForm Target { get; set; } = new();
+    public TargetForm Target { get => field ??= new(); set => field = value ?? new(); }
 
     public string Kind { get; set; } = PercentOff;
 
@@ -100,7 +100,7 @@ public class LinePromotionForm
         writer.WriteStartObject();
         writer.WritePropertyName("target");
         Target.Write(writer);
-        writer.WriteString("kind", Kind);
+        writer.WriteString("kind", Kind ?? string.Empty);
         writer.WriteNumber("value", Value);
         if (MinUnits is { } minUnits)
         {
@@ -111,7 +111,7 @@ public class LinePromotionForm
             writer.WriteNull("minUnits");
         }
 
-        writer.WriteString("label", Label);
+        writer.WriteString("label", Label ?? string.Empty);
         writer.WriteEndObject();
     }
 }
@@ -143,10 +143,10 @@ public class OrderPromotionForm
     internal void Write(Utf8JsonWriter writer)
     {
         writer.WriteStartObject();
-        writer.WriteString("kind", Kind);
+        writer.WriteString("kind", Kind ?? string.Empty);
         writer.WriteNumber("value", Value);
         writer.WriteNumber("minSubtotal", MinSubtotal);
-        writer.WriteString("label", Label);
+        writer.WriteString("label", Label ?? string.Empty);
         writer.WriteEndObject();
     }
 }

@@ -100,6 +100,63 @@ public class ValidationErrorMapperTests
         CollectionAssert.AreEqual(new[] { message }, mapped.Summary.ToArray());
     }
 
+    // The API's flat rule types (ORD-001, ORD-013, SHP-001) report errors as "'member' must ..." rather than "path: ...".
+    [TestMethod]
+    [DataRow("ORD-001", "'minutes' must be between 1 and 60.", "GracePeriod.Minutes")]
+    [DataRow("ORD-013", "'policy' must be AllOrNothing or PartialFulfilment.", "ShortfallPolicy.Policy")]
+    [DataRow("SHP-001", "'fee' must be between 0 and 100.", "ShippingFee.Fee")]
+    [DataRow("SHP-001", "'fee' must have at most 2 decimal places.", "ShippingFee.Fee")]
+    [DataRow("SHP-001", "'freeShippingThreshold' must be 0 or more.", "ShippingFee.FreeShippingThreshold")]
+    [DataRow("SHP-001", "'freeShippingThreshold' must have at most 2 decimal places.", "ShippingFee.FreeShippingThreshold")]
+    public void MapsQuotedMemberMessagesToTheMatchingFormField(string ruleTypeId, string message, string field)
+    {
+        var mapped = ValidationErrorMapper.Map(ruleTypeId, new Dictionary<string, string[]> { ["Parameters"] = [message] });
+
+        CollectionAssert.AreEqual(new[] { message }, mapped.ByField[field]);
+        Assert.HasCount(1, mapped.ByField);
+        Assert.IsEmpty(mapped.Summary);
+    }
+
+    [TestMethod]
+    [DataRow("ORD-001", "'fee' must be between 0 and 100.")]
+    [DataRow("ORD-013", "'minutes' must be between 1 and 60.")]
+    [DataRow("SHP-001", "'policy' must be AllOrNothing or PartialFulfilment.")]
+    [DataRow("ORD-001", "'unknown' must be something.")]
+    [DataRow("PRM-001", "'fee' must be between 0 and 100.")]
+    [DataRow("ORD-001", "The 'minutes' value is wrong.")]
+    [DataRow("ORD-001", "'minutes'must be glued.")]
+    public void QuotedMemberMessagesThatDoNotMatchAFieldOfTheRuleTypeGoToSummary(string ruleTypeId, string message)
+    {
+        var mapped = ValidationErrorMapper.Map(ruleTypeId, new Dictionary<string, string[]> { ["Parameters"] = [message] });
+
+        Assert.IsEmpty(mapped.ByField, string.Join(", ", mapped.ByField.Keys));
+        CollectionAssert.AreEqual(new[] { message }, mapped.Summary.ToArray());
+    }
+
+    [TestMethod]
+    public void QuotedMemberMessagesUnderOtherKeysGoToSummary()
+    {
+        var mapped = ValidationErrorMapper.Map("ORD-001", new Dictionary<string, string[]> { ["Scope"] = ["'minutes' must be between 1 and 60."] });
+
+        Assert.IsEmpty(mapped.ByField);
+        Assert.HasCount(1, mapped.Summary);
+    }
+
+    [TestMethod]
+    public void QuotedMemberAndPathMessagesCanShareOneResponse()
+    {
+        var mapped = ValidationErrorMapper.Map("SHP-001", new Dictionary<string, string[]>
+        {
+            ["Parameters"] = ["'fee' must be between 0 and 100.", "freeShippingThreshold: must be 0 or more.", "'bogus' must be fixed."],
+            ["EffectiveTo"] = ["EffectiveTo must be later than EffectiveFrom."],
+        });
+
+        Assert.HasCount(1, mapped.ByField["ShippingFee.Fee"]);
+        Assert.HasCount(1, mapped.ByField["ShippingFee.FreeShippingThreshold"]);
+        Assert.HasCount(1, mapped.ByField["EffectiveToUtc"]);
+        CollectionAssert.AreEqual(new[] { "'bogus' must be fixed." }, mapped.Summary.ToArray());
+    }
+
     [TestMethod]
     public void PathErrorsForAnUnsupportedRuleTypeKeepTheirFullMessageInSummary()
     {

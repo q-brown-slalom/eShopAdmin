@@ -1,0 +1,15 @@
+@inherits FieldsBase
+@using eShopAdmin.Rules
+
+<div class="field">
+    <label for="@IdOf("Minutes")">Minutes</label>
+    <InputNumber id="@IdOf("Minutes")" name="@NameOf("Minutes")" @bind-Value="Form.Minutes"
+                 aria-describedby="@Describe(Form, "Minutes", ErrorIdOf("Minutes"), HintIdOf("Minutes"))" />
+    <p class="hint" id="@HintIdOf("Minutes")">A whole number of minutes, from 1 to 60.</p>
+    <ValidationMessage For="() => Form.Minutes" id="@ErrorIdOf("Minutes")" />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public GracePeriodForm Form { get; set; } = default!;
+}
