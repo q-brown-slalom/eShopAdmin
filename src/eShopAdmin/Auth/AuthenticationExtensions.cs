@@ -108,5 +108,6 @@ public static class AuthenticationExtensions
     internal static bool IsLocalUrl([System.Diagnostics.CodeAnalysis.NotNullWhen(true)] string? url)
         => !string.IsNullOrEmpty(url)
             && url[0] == '/'
-            && (url.Length == 1 || (url[1] != '/' && url[1] != '\\'));
+            && (url.Length == 1 || (url[1] != '/' && url[1] != '\\'))
+            && !url.Any(char.IsControl);
 }
