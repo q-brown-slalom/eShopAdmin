@@ -1,10 +1,8 @@
 @page "/"
 
-<PageTitle>Home · eShopAdmin</PageTitle>
+@inject NavigationManager Navigation
 
-<h1>eShopAdmin</h1>
-<p>Review, schedule and publish the business rules that shape prices and promotions in the eShop store.</p>
-<ul>
-    <li><a href="rules">Rules</a>: find, edit and publish a rule.</li>
-    <li><a href="audit">Audit log</a>: see who changed what, and when.</li>
-</ul>
+@code {
+    // The rules list is the landing page.
+    protected override void OnInitialized() => Navigation.NavigateTo("rules", replace: true);
+}

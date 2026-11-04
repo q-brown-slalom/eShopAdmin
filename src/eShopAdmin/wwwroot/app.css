@@ -110,3 +110,64 @@ main {
 main:focus {
     outline: none;
 }
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table caption {
+    margin-bottom: 0.5rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.data-table th,
+.data-table td {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #6b7280;
+    text-align: left;
+    vertical-align: top;
+}
+
+.data-table thead th {
+    background: #f3f4f6;
+}
+
+.data-table pre {
+    margin: 0.5rem 0 0;
+    overflow-x: auto;
+}
+
+.note {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+}
+
+.row-actions a + a {
+    margin-left: 1rem;
+}
+
+.summary dt {
+    font-weight: 600;
+}
+
+.summary dd {
+    margin: 0 0 0.5rem;
+}
+
+.status-message:not(:empty) {
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--accent);
+    border-radius: 4px;
+}
+
+.button-link {
+    display: inline-block;
+    padding: 0.4rem 1rem;
+    color: var(--header-text);
+    background: var(--accent);
+    border-radius: 4px;
+    text-decoration: none;
+}

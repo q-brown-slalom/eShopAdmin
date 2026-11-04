@@ -1,0 +1,167 @@
+@page "/rules/{RuleTypeId}"
+@using System.Text.Json
+@using eShopAdmin.BusinessRules
+@using eShopAdmin.Rules
+@inject BusinessRulesClient Client
+@inject NavigationManager Navigation
+
+@if (ruleType is not null)
+{
+    <PageTitle>@ruleType.Id @ruleType.Name · eShopAdmin</PageTitle>
+
+    <p class="breadcrumb"><a href="rules">All rules</a></p>
+    <h1>@ruleType.Name</h1>
+    <p>@ruleType.Id · @(ruleType.AffectsPrice ? "Changes prices" : "Does not change prices")</p>
+
+    <div role="status" class="status-message">@StatusMessage</div>
+
+    @if (!supported)
+    {
+        <p class="note">@UnknownRuleTypeCopy</p>
+    }
+
+    <h2>Status</h2>
+    <dl class="summary">
+        <dt>Current value</dt>
+        <dd>
+            @if (summary.Current is { } current)
+            {
+                @($"v{current.VersionNumber}: {ParameterSummary.Describe(ruleType.Id, current.Parameters)}")
+            }
+            else
+            {
+                @:Built-in default
+            }
+        </dd>
+        <dt>Scheduled</dt>
+        <dd>
+            @if (summary.NextScheduled is { } next)
+            {
+                @($"v{next.VersionNumber} from {RuleStatusSummary.FormatUtc(next.EffectiveFrom)} UTC")
+            }
+            else
+            {
+                @:—
+            }
+        </dd>
+        <dt>Drafts</dt>
+        <dd>@summary.DraftCount</dd>
+    </dl>
+
+    @if (supported)
+    {
+        <p><a class="button-link" href="rules/@Uri.EscapeDataString(ruleType.Id)/drafts/new">New draft</a></p>
+    }
+
+    <h2>History</h2>
+    @if (history.Count == 0)
+    {
+        <p>No versions yet. The built-in default applies.</p>
+    }
+    else
+    {
+        <table class="data-table">
+            <caption>Versions of @ruleType.Id @ruleType.Name, newest first</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Version</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Effective (UTC)</th>
+                    <th scope="col">Created</th>
+                    <th scope="col">Published</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var version in history)
+                {
+                    <tr>
+                        <th scope="row">@($"v{version.VersionNumber}")</th>
+                        <td>@version.Status</td>
+                        <td>
+                            @ParameterSummary.Describe(ruleType.Id, version.Parameters)
+                            <details>
+                                <summary>Raw parameters for version @version.VersionNumber</summary>
+                                <pre>@RawJson(version.Parameters)</pre>
+                            </details>
+                        </td>
+                        <td>
+                            @RuleStatusSummary.FormatUtc(version.EffectiveFrom)
+                            to @(version.EffectiveTo is { } to ? RuleStatusSummary.FormatUtc(to) : "no end")
+                        </td>
+                        <td>@RuleStatusSummary.FormatUtc(version.CreatedAt)</td>
+                        <td>@(version.PublishedAt is { } published ? RuleStatusSummary.FormatUtc(published) : "—")</td>
+                        <td class="row-actions">
+                            @if (version.Status == RuleVersionStatus.Draft)
+                            {
+                                @if (supported)
+                                {
+                                    <a href="rules/@Uri.EscapeDataString(ruleType.Id)/drafts/@version.Id" aria-label="@($"Edit draft version {version.VersionNumber}")">Edit</a>
+                                }
+                                <AuthorizeView Policy="@AdminPolicies.Publish">
+                                    <a href="rules/@Uri.EscapeDataString(ruleType.Id)/versions/@version.Id/publish" aria-label="@($"Publish version {version.VersionNumber}")">Publish</a>
+                                </AuthorizeView>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+    private const string UnknownRuleTypeCopy = "This rule type isn't supported by this version of eShopAdmin. You can view it but not edit it.";
+    private const int MaxMessageLength = 300;
+
+    private static readonly JsonSerializerOptions IndentedJson = new() { WriteIndented = true, NewLine = "\n" };
+
+    private RuleTypeDto? ruleType;
+    private bool supported;
+    private RuleStatusSummary summary = new(null, null, 0);
+    private IReadOnlyList<RuleVersionDto> history = [];
+
+    [Parameter]
+    public string RuleTypeId { get; set; } = string.Empty;
+
+    // Set by the draft and publish pages when they redirect back here. Always rendered as encoded text.
+    [SupplyParameterFromQuery(Name = "status")]
+    public string? Message { get; set; }
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? StatusMessage
+    {
+        get
+        {
+            var text = Message?.Trim();
+            return string.IsNullOrEmpty(text) ? null : text.Length > MaxMessageLength ? text[..MaxMessageLength] : text;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ct = HttpContext?.RequestAborted ?? default;
+        ruleType = (await Client.GetRuleTypesAsync(ct))
+            .FirstOrDefault(t => string.Equals(t.Id, RuleTypeId, StringComparison.Ordinal));
+
+        if (ruleType is null)
+        {
+            // Sets the 404 status and renders the router's NotFoundPage.
+            Navigation.NotFound();
+            return;
+        }
+
+        supported = RuleForms.IsSupported(ruleType.Id);
+        var versions = await Client.GetVersionsAsync(ruleType.Id, ct);
+        summary = RuleStatusSummary.From(versions, DateTimeOffset.UtcNow);
+        history = versions.OrderByDescending(v => v.VersionNumber).ToList();
+    }
+
+    private static string RawJson(JsonElement parameters) =>
+        parameters.ValueKind == JsonValueKind.Undefined
+            ? "(no parameters)"
+            : JsonSerializer.Serialize(parameters, IndentedJson);
+}

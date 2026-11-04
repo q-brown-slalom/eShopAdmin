@@ -19,7 +19,7 @@ for (const user of users) {
     await page.getByPlaceholder('Password').fill(password!);
     await page.getByRole('button', { name: 'Login' }).click();
 
-    await expect(page.getByRole('heading', { name: 'eShopAdmin', level: 1 })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Rules', level: 1 })).toBeVisible();
     await page.context().storageState({ path: user.stateFile });
   });
 }
