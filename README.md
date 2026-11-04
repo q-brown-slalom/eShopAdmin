@@ -70,16 +70,18 @@ Playwright starts the AppHost itself unless it is already running.
 
 ## CI
 
-Three workflows in `.github/workflows` run on pull requests (the first two also on pushes to `main`):
+Three workflows in `.github/workflows` run on pull requests. `pr-validation.yml` and `playwright.yml` also run on pushes
+to `main`; `markdownlint.yml` runs on pull requests only.
 
 - `pr-validation.yml` builds and tests `eShopAdmin.slnx` (skipped for Markdown-only changes).
 - `markdownlint.yml` lints all Markdown with `.markdownlint.json`.
 - `playwright.yml` runs the E2E tests against both AppHosts in one job:
-  1. It checks out eShop (repository variable `ESHOP_REPOSITORY`, branch `main`) into `eshop/`.
+  1. It fails at once with a clear message when the repository variable `ESHOP_REPOSITORY` isn't set, then checks out
+     eShop (that repository, branch `main`) into `eshop/`.
   2. It starts eShop's AppHost in the background with `ESHOP_USE_HTTP_ENDPOINTS=1` and
      `Parameters__eshopadmin-url=http://localhost:5250`, then waits up to 5 minutes for Identity.API
      (`http://localhost:5223/.well-known/openid-configuration`) and BusinessRules.API
-     (`http://localhost:5230/health`).
+     (`http://localhost:5230/health`). The wait stops early if the eShop process dies.
   3. `npm run test:e2e` starts eShopAdmin's AppHost through Playwright's `webServer`, with
      `Parameters__identity-url=http://localhost:5223`, and signs in as `alice` and `bob`.
   4. The `playwright-report/` folder is uploaded as an artifact for 30 days.

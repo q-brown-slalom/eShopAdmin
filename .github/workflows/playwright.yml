@@ -17,13 +17,20 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
+    - name: Require the eShop repository variable
+      run: test -n "$ESHOP_REPOSITORY" || { echo "::error::Set the ESHOP_REPOSITORY repository variable (owner/name of the eShop repository)."; exit 1; }
+      env:
+        ESHOP_REPOSITORY: ${{ vars.ESHOP_REPOSITORY }}
     - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
     - name: Check out eShop
       uses: actions/checkout@v4
       with:
         repository: ${{ vars.ESHOP_REPOSITORY }}
         ref: main
         path: eshop
+        persist-credentials: false
     - uses: actions/setup-dotnet@v4
       with:
         global-json-file: global.json
@@ -37,7 +44,9 @@ jobs:
     - name: Start eShop
       # eShop's AppHost runs in the background for the rest of the job. Its dashboard uses
       # ports 19888/18848/18076/19076, eShopAdmin's AppHost 19890/18850/18078/19078, so they don't collide.
-      run: nohup dotnet run --project eshop/src/eShop.AppHost > "$RUNNER_TEMP/eshop-apphost.log" 2>&1 &
+      run: |
+        nohup dotnet run --project eshop/src/eShop.AppHost > "$RUNNER_TEMP/eshop-apphost.log" 2>&1 &
+        echo $! > "$RUNNER_TEMP/eshop-apphost.pid"
       env:
         ESHOP_USE_HTTP_ENDPOINTS: 1
         Parameters__eshopadmin-url: http://localhost:5250
@@ -46,6 +55,10 @@ jobs:
       run: |
         wait_for() {
           until curl --silent --fail --output /dev/null "$1"; do
+            if ! kill -0 "$(cat "$RUNNER_TEMP/eshop-apphost.pid")" 2>/dev/null; then
+              echo "The eShop AppHost process exited while waiting for $1"
+              exit 1
+            fi
             if [ "$SECONDS" -ge 300 ]; then
               echo "Timed out after 5 minutes waiting for $1"
               exit 1
@@ -68,8 +81,8 @@ jobs:
         EDITOR_USERNAME: bob
         PASSWORD: Pass123$
     - name: Show eShop AppHost log
-      if: failure()
-      run: tail -n 200 "$RUNNER_TEMP/eshop-apphost.log"
+      if: ${{ !cancelled() }}
+      run: tail -n 200 "$RUNNER_TEMP/eshop-apphost.log" || true
     - uses: actions/upload-artifact@v4
       if: always()
       with:
