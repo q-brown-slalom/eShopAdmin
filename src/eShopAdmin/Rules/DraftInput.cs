@@ -126,6 +126,15 @@ public sealed class DraftInput
         }
     }
 
+    /// <summary>The distinct item ids that Item targets point at, for looking up their names.</summary>
+    public IReadOnlyCollection<int> ItemTargetIds() =>
+        PriceAdjustment.Entries.Select(e => e.Target)
+            .Concat(Promotion.LinePromotions.Select(l => l.Target))
+            .Where(t => t.Kind == TargetForm.Item && t.Id is > 0)
+            .Select(t => t.Id!.Value)
+            .Distinct()
+            .ToList();
+
     public void AddEntry(string list)
     {
         switch (list)

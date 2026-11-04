@@ -47,7 +47,7 @@
         <label for="@IdOf("ItemId")">Target item id</label>
         <InputNumber id="@IdOf("ItemId")" name="@NameOf("ItemId")" @bind-Value="Form.ItemId"
                      aria-describedby="@Describe(Form, "Id", ErrorIdOf("Id"), HintIdOf("ItemId"))" />
-        <p class="hint" id="@HintIdOf("ItemId")">Used when Applies to is One item.</p>
+        <p class="hint" id="@HintIdOf("ItemId")">Used when Applies to is One item.@ItemNameHint</p>
     </div>
 }
 else
@@ -56,7 +56,7 @@ else
         <label for="@IdOf("Id")">Target id</label>
         <InputNumber id="@IdOf("Id")" name="@NameOf("Id")" @bind-Value="Form.Id"
                      aria-describedby="@Describe(Form, "Id", ErrorIdOf("Id"), HintIdOf("Id"))" />
-        <p class="hint" id="@HintIdOf("Id")">The id of the brand, product type or item. Not used when Applies to is All products.</p>
+        <p class="hint" id="@HintIdOf("Id")">The id of the brand, product type or item. Not used when Applies to is All products.@ItemNameHint</p>
     </div>
 }
 
@@ -73,4 +73,12 @@ else
     /// <summary>Catalog brands by name, or null when Catalog is unavailable.</summary>
     [Parameter]
     public IReadOnlyList<CatalogOption>? Brands { get; set; }
+
+    /// <summary>Catalog item names by id. An id that isn't here (unknown, or Catalog down) simply shows no name.</summary>
+    [Parameter]
+    public IReadOnlyDictionary<int, string>? ItemNames { get; set; }
+
+    private RenderFragment? ItemNameHint => Form.ItemName(ItemNames) is { } name
+        ? @<text> Item: <span class="item-name">@name</span></text>
+        : null;
 }

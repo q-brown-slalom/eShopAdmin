@@ -68,8 +68,8 @@
                     <th scope="col">Status</th>
                     <th scope="col">Value</th>
                     <th scope="col">Effective (UTC)</th>
-                    <th scope="col">Created</th>
-                    <th scope="col">Published</th>
+                    <th scope="col">Created (UTC)</th>
+                                        <th scope="col">Published (UTC)</th>
                     <th scope="col">Actions</th>
                 </tr>
             </thead>
@@ -113,7 +113,6 @@
 
 @code {
     private const string UnknownRuleTypeCopy = "This rule type isn't supported by this version of eShopAdmin. You can view it but not edit it.";
-    private const int MaxMessageLength = 300;
 
     private static readonly JsonSerializerOptions IndentedJson = new() { WriteIndented = true, NewLine = "\n" };
 
@@ -125,21 +124,20 @@
     [Parameter]
     public string RuleTypeId { get; set; } = string.Empty;
 
-    // Set by the draft and publish pages when they redirect back here. Always rendered as encoded text.
+    // Set by the draft and publish pages when they redirect back here: a fixed code and a number, never free text.
     [SupplyParameterFromQuery(Name = "status")]
-    public string? Message { get; set; }
+    public string? StatusCode { get; set; }
+
+    [SupplyParameterFromQuery(Name = "v")]
+    public string? DraftVersion { get; set; }
+
+    [SupplyParameterFromQuery(Name = "snapshot")]
+    public string? Snapshot { get; set; }
 
     [CascadingParameter]
     private HttpContext? HttpContext { get; set; }
 
-    private string? StatusMessage
-    {
-        get
-        {
-            var text = Message?.Trim();
-            return string.IsNullOrEmpty(text) ? null : text.Length > MaxMessageLength ? text[..MaxMessageLength] : text;
-        }
-    }
+    private string? StatusMessage => StatusBanner.Text(StatusCode, DraftVersion, Snapshot);
 
     protected override async Task OnInitializedAsync()
     {

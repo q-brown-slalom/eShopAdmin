@@ -210,7 +210,7 @@
         switch (result)
         {
             case PublishResult.Published published:
-                Navigation.NavigateTo($"{HistoryUrl}?status={Uri.EscapeDataString(PublishCopy.Published(published.SnapshotVersion))}");
+                Navigation.NavigateTo($"{HistoryUrl}?{StatusBanner.PublishedQuery(published.SnapshotVersion)}");
                 break;
             case PublishResult.V1ClientsActive v1:
                 overrideShown = true;

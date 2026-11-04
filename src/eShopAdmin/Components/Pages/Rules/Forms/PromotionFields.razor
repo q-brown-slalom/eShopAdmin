@@ -29,7 +29,7 @@
         <fieldset class="entry">
             <legend>Line promotion @(index + 1)</legend>
 
-            <TargetFields Form="line.Target" NamePrefix="@NameOf($"{row}.Target")" Types="Types" Brands="Brands" />
+            <TargetFields Form="line.Target" NamePrefix="@NameOf($"{row}.Target")" Types="Types" Brands="Brands" ItemNames="ItemNames" />
             <ValidationMessage For="() => line.Target" id="@ErrorIdOf($"{row}.Target")" />
 
             <div class="field">
@@ -152,4 +152,7 @@
 
     [Parameter]
     public IReadOnlyList<CatalogOption>? Brands { get; set; }
+
+    [Parameter]
+    public IReadOnlyDictionary<int, string>? ItemNames { get; set; }
 }

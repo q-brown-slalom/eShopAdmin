@@ -23,6 +23,12 @@ public class TargetForm
 
     public int? ItemId { get; set; }
 
+    /// <summary>The Catalog name of the targeted item, or null when the target isn't an item or the name isn't known.</summary>
+    public string? ItemName(IReadOnlyDictionary<int, string>? names) =>
+        Kind == Item && Id is { } id && names is not null && names.TryGetValue(id, out var name) && !string.IsNullOrWhiteSpace(name)
+            ? name
+            : null;
+
     internal void ResolveId()
     {
         Id = Kind switch

@@ -24,7 +24,7 @@
         <fieldset class="entry">
             <legend>Entry @(index + 1)</legend>
 
-            <TargetFields Form="entry.Target" NamePrefix="@NameOf($"{row}.Target")" Types="Types" Brands="Brands" />
+            <TargetFields Form="entry.Target" NamePrefix="@NameOf($"{row}.Target")" Types="Types" Brands="Brands" ItemNames="ItemNames" />
             <ValidationMessage For="() => entry.Target" id="@ErrorIdOf($"{row}.Target")" />
 
             <div class="field">
@@ -63,4 +63,7 @@
 
     [Parameter]
     public IReadOnlyList<CatalogOption>? Brands { get; set; }
+
+    [Parameter]
+    public IReadOnlyDictionary<int, string>? ItemNames { get; set; }
 }

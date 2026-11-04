@@ -100,11 +100,11 @@
                     break;
                 case RuleForms.PriceAdjustment:
                     <PriceAdjustmentFields Form="Input.PriceAdjustment" NamePrefix="@NameOf(nameof(DraftInput.PriceAdjustment))"
-                                           Types="catalogTypes" Brands="catalogBrands" />
+                                           Types="catalogTypes" Brands="catalogBrands" ItemNames="itemNames" />
                     break;
                 case RuleForms.Promotion:
                     <PromotionFields Form="Input.Promotion" NamePrefix="@NameOf(nameof(DraftInput.Promotion))"
-                                     Types="catalogTypes" Brands="catalogBrands" />
+                                     Types="catalogTypes" Brands="catalogBrands" ItemNames="itemNames" />
                     break;
             }
 
@@ -136,6 +136,7 @@
     private ValidationMessageStore? messageStore;
     private IReadOnlyList<CatalogOption>? catalogTypes;
     private IReadOnlyList<CatalogOption>? catalogBrands;
+    private IReadOnlyDictionary<int, string>? itemNames;
     private bool catalogUnavailable;
     private bool startsInPast;
     private string? startNote;
@@ -260,7 +261,11 @@
 
         var typesTask = Catalog.GetTypesAsync(ct);
         var brandsTask = Catalog.GetBrandsAsync(ct);
-        await Task.WhenAll(typesTask, brandsTask);
+        var namesTask = Catalog.GetItemNamesAsync(Input!.ItemTargetIds(), ct);
+        await Task.WhenAll(typesTask, brandsTask, namesTask);
+
+        // A missing name is only a missing hint: ids not found, or Catalog down, show no name and no error.
+        itemNames = namesTask.Result;
 
         // One missing list is enough to switch every target to numeric ids, so the pickers are never half there.
         if (typesTask.Result is { } types && brandsTask.Result is { } brands)
@@ -330,7 +335,7 @@
         switch (result)
         {
             case SaveDraftResult.Saved saved:
-                Navigation.NavigateTo($"{HistoryUrl}?status={Uri.EscapeDataString($"Draft v{saved.Version.VersionNumber} saved.")}");
+                Navigation.NavigateTo($"{HistoryUrl}?{StatusBanner.DraftSavedQuery(saved.Version.VersionNumber)}");
                 break;
             case SaveDraftResult.Invalid invalid:
                 ShowErrors(ValidationErrorMapper.Map(ruleType!.Id, invalid.Errors));
