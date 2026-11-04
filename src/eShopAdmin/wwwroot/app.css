@@ -145,6 +145,17 @@ main:focus {
     font-size: 0.9rem;
 }
 
+.pager {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.pager [aria-disabled="true"] {
+    color: #4b5563;
+}
+
 .row-actions a + a {
     margin-left: 1rem;
 }

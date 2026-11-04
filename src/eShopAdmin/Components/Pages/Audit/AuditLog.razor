@@ -1,0 +1,108 @@
+@page "/audit"
+@using eShopAdmin.BusinessRules
+@using eShopAdmin.Rules
+@inject BusinessRulesClient Client
+
+<PageTitle>Audit log · eShopAdmin</PageTitle>
+
+<h1>Audit log</h1>
+
+@if (entries.Count == 0)
+{
+    @if (pageIndex > 0 && total > 0)
+    {
+        <p>There are no entries on this page. <a href="audit?page=0">Back to the first page</a></p>
+    }
+    else
+    {
+        <p>No rule changes have been recorded yet.</p>
+    }
+}
+else
+{
+    <table class="data-table">
+        <caption>Rule changes, newest first</caption>
+        <thead>
+            <tr>
+                <th scope="col">When (UTC)</th>
+                <th scope="col">Action</th>
+                <th scope="col">Rule</th>
+                <th scope="col">Version id</th>
+                <th scope="col">By</th>
+                <th scope="col">Reason</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in entries)
+            {
+                <tr>
+                    <th scope="row">@RuleStatusSummary.FormatUtc(entry.OccurredAt)</th>
+                    <td>@AuditActionText.Describe(entry.Action)</td>
+                    <td>@entry.RuleTypeId</td>
+                    <td>@(entry.RuleVersionId is { } versionId ? versionId.ToString() : "—")</td>
+                    <td>@AuditLogView.By(entry.ActorId, subject)</td>
+                    <td>
+                        @(string.IsNullOrWhiteSpace(entry.Reason) ? "—" : entry.Reason)
+                        <details>
+                            <summary>Before and after for entry @entry.Id</summary>
+                            <p class="note">Before</p>
+                            <pre>@AuditLogView.PrettyJson(entry.BeforeJson)</pre>
+                            <p class="note">After</p>
+                            <pre>@AuditLogView.PrettyJson(entry.AfterJson)</pre>
+                        </details>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <nav aria-label="Audit pages" class="pager">
+        @if (pageIndex > 0)
+        {
+            <a href="audit?page=@(pageIndex - 1)" rel="prev">Previous</a>
+        }
+        else
+        {
+            <span aria-disabled="true">Previous</span>
+        }
+        <span>Page @(pageIndex + 1) of @pageCount</span>
+        @if (hasNext)
+        {
+            <a href="audit?page=@(pageIndex + 1)" rel="next">Next</a>
+        }
+        else
+        {
+            <span aria-disabled="true">Next</span>
+        }
+    </nav>
+}
+
+@code {
+    private int pageIndex;
+    private long total;
+    private int pageCount;
+    private bool hasNext;
+    private string? subject;
+    private IReadOnlyList<AuditEntryDto> entries = [];
+
+    // Read as text so a malformed value falls back to the first page instead of failing the request.
+    [SupplyParameterFromQuery(Name = "page")]
+    public string? PageText { get; set; }
+
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var ct = HttpContext?.RequestAborted ?? default;
+        // The cookie principal keeps the raw claim names (MapInboundClaims = false), so the id is "sub".
+        subject = HttpContext?.User.FindFirst("sub")?.Value;
+        pageIndex = AuditLogView.ParsePage(PageText);
+
+        var page = await Client.GetAuditAsync(pageIndex, AuditLogView.PageSize, ct);
+        entries = page.Data;
+        total = page.Count;
+        pageCount = AuditLogView.PageCount(page.Count, page.PageSize);
+        hasNext = AuditLogView.HasNext(page);
+    }
+}
