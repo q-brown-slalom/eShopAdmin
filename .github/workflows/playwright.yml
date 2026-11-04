@@ -21,11 +21,11 @@ jobs:
       run: test -n "$ESHOP_REPOSITORY" || { echo "::error::Set the ESHOP_REPOSITORY repository variable (owner/name of the eShop repository)."; exit 1; }
       env:
         ESHOP_REPOSITORY: ${{ vars.ESHOP_REPOSITORY }}
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
       with:
         persist-credentials: false
     - name: Check out eShop
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: ${{ vars.ESHOP_REPOSITORY }}
         # Empty ESHOP_REF means eShop's default branch (the eShop fork has no `main`).
