@@ -1,0 +1,11 @@
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\bin\eShopAdmin.ServiceDefaults\debug\eShopAdmin.ServiceDefaults.deps.json
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\bin\eShopAdmin.ServiceDefaults\debug\eShopAdmin.ServiceDefaults.dll
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\obj\eShopAdmin.ServiceDefaults\debug\eShopAdmin.ServiceDefaults.csproj.AssemblyReference.cache
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\obj\eShopAdmin.ServiceDefaults\debug\eShopAdmin.ServiceDefaults.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\obj\eShopAdmin.ServiceDefaults\debug\eShopAdmin.ServiceDefaults.AssemblyInfoInputs.cache
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\obj\eShopAdmin.ServiceDefaults\debug\eShopAdmin.ServiceDefaults.AssemblyInfo.cs
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\obj\eShopAdmin.ServiceDefaults\debug\eShopAdmin.ServiceDefaults.csproj.CoreCompileInputs.cache
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\obj\eShopAdmin.ServiceDefaults\debug\eShopAdmin.ServiceDefaults.dll
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\obj\eShopAdmin.ServiceDefaults\debug\refint\eShopAdmin.ServiceDefaults.dll
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\obj\eShopAdmin.ServiceDefaults\debug\ref\eShopAdmin.ServiceDefaults.dll
+C:\Users\q.brown\OneDrive - Slalom\Projects\AE-Immersion\eShopAdmin\artifacts\obj\eShopAdmin.ServiceDefaults\debug\eShopAdmin.ServiceDefaults.sourcelink.json

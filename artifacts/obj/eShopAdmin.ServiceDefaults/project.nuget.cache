@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "dgSpecHash": "+w7zy2tJy2s=",
+  "success": true,
+  "projectFilePath": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.ambientmetadata.application\\10.10.0\\microsoft.extensions.ambientmetadata.application.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.compliance.abstractions\\10.10.0\\microsoft.extensions.compliance.abstractions.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.dependencyinjection.autoactivation\\10.10.0\\microsoft.extensions.dependencyinjection.autoactivation.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.diagnostics.exceptionsummarization\\10.10.0\\microsoft.extensions.diagnostics.exceptionsummarization.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.http.diagnostics\\10.10.0\\microsoft.extensions.http.diagnostics.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.http.resilience\\10.10.0\\microsoft.extensions.http.resilience.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.resilience\\10.10.0\\microsoft.extensions.resilience.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.servicediscovery\\10.10.0\\microsoft.extensions.servicediscovery.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.servicediscovery.abstractions\\10.10.0\\microsoft.extensions.servicediscovery.abstractions.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.telemetry\\10.10.0\\microsoft.extensions.telemetry.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.telemetry.abstractions\\10.10.0\\microsoft.extensions.telemetry.abstractions.10.10.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\opentelemetry\\1.19.1\\opentelemetry.1.19.1.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\opentelemetry.api\\1.19.1\\opentelemetry.api.1.19.1.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\opentelemetry.api.providerbuilderextensions\\1.19.1\\opentelemetry.api.providerbuilderextensions.1.19.1.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\opentelemetry.exporter.opentelemetryprotocol\\1.19.1\\opentelemetry.exporter.opentelemetryprotocol.1.19.1.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\opentelemetry.extensions.hosting\\1.19.1\\opentelemetry.extensions.hosting.1.19.1.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\opentelemetry.instrumentation.aspnetcore\\1.19.0\\opentelemetry.instrumentation.aspnetcore.1.19.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\opentelemetry.instrumentation.http\\1.19.0\\opentelemetry.instrumentation.http.1.19.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\opentelemetry.instrumentation.runtime\\1.19.0\\opentelemetry.instrumentation.runtime.1.19.0.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\polly.core\\8.4.2\\polly.core.8.4.2.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\polly.extensions\\8.4.2\\polly.extensions.8.4.2.nupkg.sha512",
+    "C:\\Users\\q.brown\\.nuget\\packages\\polly.ratelimiting\\8.4.2\\polly.ratelimiting.8.4.2.nupkg.sha512"
+  ],
+  "logs": []
+}

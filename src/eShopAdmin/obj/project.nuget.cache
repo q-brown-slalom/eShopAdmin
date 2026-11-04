@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "3n3gGgHqAfI=",
+  "success": false,
+  "projectFilePath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin\\eShopAdmin.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1015",
+      "level": "Error",
+      "message": "The following PackageReference item(s) do not have a version specified: Asp.Versioning.Http.Client, Microsoft.AspNetCore.Authentication.OpenIdConnect",
+      "projectPath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin\\eShopAdmin.csproj",
+      "filePath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin\\eShopAdmin.csproj",
+      "targetGraphs": []
+    }
+  ]
+}
