@@ -22,7 +22,7 @@ public class RouteAuthorizationTests
     }
 
     [TestMethod]
-    public void EveryRoutablePageRequiresAuthorizationExceptAccessDenied()
+    public void EveryRoutablePageRequiresAuthorizationExceptAccessDeniedAndError()
     {
         var routable = typeof(Home).Assembly.GetTypes()
             .Where(t => t.GetCustomAttributes<RouteAttribute>().Any())
@@ -30,6 +30,7 @@ public class RouteAuthorizationTests
 
         CollectionAssert.Contains(routable, typeof(Home));
         CollectionAssert.Contains(routable, typeof(AccessDenied));
+        CollectionAssert.Contains(routable, typeof(Error));
 
         var options = new AuthorizationOptions();
         AdminPolicies.Configure(options);
@@ -38,9 +39,9 @@ public class RouteAuthorizationTests
         foreach (var page in routable)
         {
             var allowsAnonymous = page.GetCustomAttribute<AllowAnonymousAttribute>() is not null;
-            if (page == typeof(AccessDenied))
+            if (page == typeof(AccessDenied) || page == typeof(Error))
             {
-                Assert.IsTrue(allowsAnonymous, "AccessDenied must be reachable without a rules role.");
+                Assert.IsTrue(allowsAnonymous, $"{page.Name} must be reachable without a rules role.");
             }
             else
             {

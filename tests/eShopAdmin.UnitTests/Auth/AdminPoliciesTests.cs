@@ -32,15 +32,19 @@ public class AdminPoliciesTests
         => Assert.IsFalse((await Authorize(User("RulesEditor"), AdminPolicies.Publish)).Succeeded);
 
     [TestMethod]
-    public void FallbackPolicyIsTheAccessPolicy()
+    public async Task FallbackPolicyAdmitsEditorsAndRejectsEveryoneElse()
     {
         var options = new AuthorizationOptions();
         AdminPolicies.Configure(options);
-
         Assert.IsNotNull(options.FallbackPolicy);
-        CollectionAssert.AreEquivalent(
-            options.GetPolicy(AdminPolicies.Access)!.Requirements.Select(r => r.GetType()).ToList(),
-            options.FallbackPolicy.Requirements.Select(r => r.GetType()).ToList());
+
+        Assert.IsTrue((await AuthorizePolicy(User("RulesEditor"), options.FallbackPolicy)).Succeeded);
+        Assert.IsTrue((await AuthorizePolicy(User("RulesPublisher"), options.FallbackPolicy)).Succeeded);
+        Assert.IsFalse((await AuthorizePolicy(User("Customer"), options.FallbackPolicy)).Succeeded);
+        Assert.IsFalse((await AuthorizePolicy(new ClaimsPrincipal(new ClaimsIdentity()), options.FallbackPolicy)).Succeeded);
+
+        // The fallback is the access policy, not the stricter publish one.
+        Assert.IsFalse((await Authorize(User("RulesEditor"), AdminPolicies.Publish)).Succeeded);
     }
 
     private static ClaimsPrincipal User(string? role)
@@ -51,11 +55,21 @@ public class AdminPoliciesTests
 
     private static async Task<AuthorizationResult> Authorize(ClaimsPrincipal user, string policy)
     {
+        using var provider = BuildProvider();
+        return await provider.GetRequiredService<IAuthorizationService>().AuthorizeAsync(user, null, policy);
+    }
+
+    private static async Task<AuthorizationResult> AuthorizePolicy(ClaimsPrincipal user, AuthorizationPolicy policy)
+    {
+        using var provider = BuildProvider();
+        return await provider.GetRequiredService<IAuthorizationService>().AuthorizeAsync(user, null, policy.Requirements);
+    }
+
+    private static ServiceProvider BuildProvider()
+    {
         var services = new ServiceCollection();
         services.AddLogging();
         services.AddAuthorization(AdminPolicies.Configure);
-        using var provider = services.BuildServiceProvider();
-
-        return await provider.GetRequiredService<IAuthorizationService>().AuthorizeAsync(user, null, policy);
+        return services.BuildServiceProvider();
     }
 }

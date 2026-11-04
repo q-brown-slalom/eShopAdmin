@@ -24,6 +24,8 @@ app.MapDefaultEndpoints();
 
 if (!app.Environment.IsDevelopment())
 {
+    // First in the pipeline so it sees every failure the ReauthenticateMiddleware lets through.
+    app.UseExceptionHandler("/error", createScopeForErrors: true);
     app.UseHsts();
 }
 
