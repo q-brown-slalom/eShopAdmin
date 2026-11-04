@@ -1,0 +1,23 @@
+@inherits FieldsBase
+@using eShopAdmin.Rules
+
+<div class="field">
+    <label for="@IdOf("Fee")">Shipping fee</label>
+    <InputNumber id="@IdOf("Fee")" name="@NameOf("Fee")" @bind-Value="Form.Fee"
+                 aria-describedby="@Describe(Form, "Fee", ErrorIdOf("Fee"), HintIdOf("Fee"))" />
+    <p class="hint" id="@HintIdOf("Fee")">From 0 to 100, with at most 2 decimal places.</p>
+    <ValidationMessage For="() => Form.Fee" id="@ErrorIdOf("Fee")" />
+</div>
+
+<div class="field">
+    <label for="@IdOf("FreeShippingThreshold")">Free shipping threshold (optional)</label>
+    <InputNumber id="@IdOf("FreeShippingThreshold")" name="@NameOf("FreeShippingThreshold")" @bind-Value="Form.FreeShippingThreshold"
+                 aria-describedby="@Describe(Form, "FreeShippingThreshold", ErrorIdOf("FreeShippingThreshold"), HintIdOf("FreeShippingThreshold"))" />
+    <p class="hint" id="@HintIdOf("FreeShippingThreshold")">Orders whose subtotal after discounts reaches this amount ship free. Leave empty for no free shipping.</p>
+    <ValidationMessage For="() => Form.FreeShippingThreshold" id="@ErrorIdOf("FreeShippingThreshold")" />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ShippingFeeForm Form { get; set; } = default!;
+}

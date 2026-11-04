@@ -1,0 +1,34 @@
+@inherits LayoutComponentBase
+
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<header class="app-header">
+    <a class="app-name" href="/">eShopAdmin</a>
+
+    <AuthorizeView Policy="@AdminPolicies.Access">
+        <Authorized>
+            <nav aria-label="Main">
+                <ul>
+                    <li><NavLink href="rules">Rules</NavLink></li>
+                    <li><NavLink href="audit">Audit log</NavLink></li>
+                </ul>
+            </nav>
+        </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView>
+        <Authorized>
+            <div class="app-user">
+                <span class="user-name">@context.User.Identity?.Name</span>
+                <form method="post" action="/authentication/logout">
+                    <AntiforgeryToken />
+                    <button type="submit">Sign out</button>
+                </form>
+            </div>
+        </Authorized>
+    </AuthorizeView>
+</header>
+
+<main id="main-content" tabindex="-1">
+    @Body
+</main>

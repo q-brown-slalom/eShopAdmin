@@ -1,0 +1,36 @@
+@inherits FieldsBase
+@using eShopAdmin.Rules
+
+<div class="field">
+    <label for="@IdOf("EffectiveFromUtc")">Starts (UTC)</label>
+    <InputDate TValue="DateTime" Type="InputDateType.DateTimeLocal" id="@IdOf("EffectiveFromUtc")" name="@NameOf("EffectiveFromUtc")"
+               @bind-Value="Form.EffectiveFromUtc"
+               aria-describedby="@Describe(Form, "EffectiveFromUtc", ErrorIdOf("EffectiveFromUtc"), HintIdOf("EffectiveFromUtc"))" />
+    <p class="hint" id="@HintIdOf("EffectiveFromUtc")">
+        All times are UTC.
+        @if (StartsInPast)
+        {
+            @PastStartCopy
+        }
+    </p>
+    <ValidationMessage For="() => Form.EffectiveFromUtc" id="@ErrorIdOf("EffectiveFromUtc")" />
+</div>
+
+<div class="field">
+    <label for="@IdOf("EffectiveToUtc")">Ends (UTC, optional)</label>
+    <InputDate TValue="DateTime?" Type="InputDateType.DateTimeLocal" id="@IdOf("EffectiveToUtc")" name="@NameOf("EffectiveToUtc")"
+               @bind-Value="Form.EffectiveToUtc"
+               aria-describedby="@Describe(Form, "EffectiveToUtc", ErrorIdOf("EffectiveToUtc"), HintIdOf("EffectiveToUtc"))" />
+    <p class="hint" id="@HintIdOf("EffectiveToUtc")">Leave empty for no end.</p>
+    <ValidationMessage For="() => Form.EffectiveToUtc" id="@ErrorIdOf("EffectiveToUtc")" />
+</div>
+
+@code {
+    private const string PastStartCopy = "A start time in the past takes effect as soon as the version is published.";
+
+    [Parameter, EditorRequired]
+    public DraftInput Form { get; set; } = default!;
+
+    [Parameter]
+    public bool StartsInPast { get; set; }
+}

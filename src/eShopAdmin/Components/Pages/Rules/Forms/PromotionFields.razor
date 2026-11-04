@@ -1,0 +1,158 @@
+@inherits FieldsBase
+@using eShopAdmin.Catalog
+@using eShopAdmin.Rules
+
+<fieldset class="list">
+    <legend>Line promotions</legend>
+
+    @if (Form.LinePromotions.Count == 0)
+    {
+        <p>No line promotions.</p>
+    }
+
+    @for (var i = 0; i < Form.LinePromotions.Count; i++)
+    {
+        var index = i;
+        var line = Form.LinePromotions[index];
+        var row = $"LinePromotions[{index}]";
+        var kindId = IdOf($"{row}.Kind");
+        var kindError = ErrorIdOf($"{row}.Kind");
+        var valueId = IdOf($"{row}.Value");
+        var valueError = ErrorIdOf($"{row}.Value");
+        var minUnitsId = IdOf($"{row}.MinUnits");
+        var minUnitsError = ErrorIdOf($"{row}.MinUnits");
+        var minUnitsHint = HintIdOf($"{row}.MinUnits");
+        var labelId = IdOf($"{row}.Label");
+        var labelError = ErrorIdOf($"{row}.Label");
+        var labelHint = HintIdOf($"{row}.Label");
+
+        <fieldset class="entry">
+            <legend>Line promotion @(index + 1)</legend>
+
+            <TargetFields Form="line.Target" NamePrefix="@NameOf($"{row}.Target")" Types="Types" Brands="Brands" ItemNames="ItemNames" />
+            <ValidationMessage For="() => line.Target" id="@ErrorIdOf($"{row}.Target")" />
+
+            <div class="field">
+                <label for="@kindId">Discount type</label>
+                <InputSelect id="@kindId" name="@NameOf($"{row}.Kind")" @bind-Value="line.Kind"
+                             aria-describedby="@Describe(line, "Kind", kindError)">
+                    <option value="@LinePromotionForm.PercentOff">Percent off</option>
+                    <option value="@LinePromotionForm.AmountOff">Amount off</option>
+                </InputSelect>
+                <ValidationMessage For="() => line.Kind" id="@kindError" />
+            </div>
+
+            <div class="field">
+                <label for="@valueId">Value</label>
+                <InputNumber id="@valueId" name="@NameOf($"{row}.Value")" @bind-Value="line.Value"
+                             aria-describedby="@Describe(line, "Value", valueError)" />
+                <ValidationMessage For="() => line.Value" id="@valueError" />
+            </div>
+
+            <div class="field">
+                <label for="@minUnitsId">Minimum units (optional)</label>
+                <InputNumber id="@minUnitsId" name="@NameOf($"{row}.MinUnits")" @bind-Value="line.MinUnits"
+                             aria-describedby="@Describe(line, "MinUnits", minUnitsError, minUnitsHint)" />
+                <p class="hint" id="@minUnitsHint">Units of the item needed before the discount applies. Leave empty for no minimum.</p>
+                <ValidationMessage For="() => line.MinUnits" id="@minUnitsError" />
+            </div>
+
+            <div class="field">
+                <label for="@labelId">Label</label>
+                <InputText id="@labelId" name="@NameOf($"{row}.Label")" @bind-Value="line.Label"
+                           aria-describedby="@Describe(line, "Label", labelError, labelHint)" />
+                <p class="hint" id="@labelHint">Shown to shoppers. 1 to 60 characters, without &lt; or &gt;.</p>
+                <ValidationMessage For="() => line.Label" id="@labelError" />
+            </div>
+
+            <button type="submit" class="secondary" name="@DraftAction.FieldName" value="@DraftAction.RemoveValue(DraftInput.LinePromotions, index)"
+                    aria-label="@($"Remove line promotion {index + 1}")">Remove</button>
+        </fieldset>
+    }
+
+    <ValidationMessage For="() => Form.LinePromotions" id="@ErrorIdOf("LinePromotions")" />
+    <button type="submit" class="secondary" name="@DraftAction.FieldName" value="@DraftAction.AddValue(DraftInput.LinePromotions)">Add line promotion</button>
+</fieldset>
+
+<fieldset class="list">
+    <legend>Order promotions</legend>
+
+    @if (Form.OrderPromotions.Count == 0)
+    {
+        <p>No order promotions.</p>
+    }
+
+    @for (var i = 0; i < Form.OrderPromotions.Count; i++)
+    {
+        var index = i;
+        var order = Form.OrderPromotions[index];
+        var row = $"OrderPromotions[{index}]";
+        var kindId = IdOf($"{row}.Kind");
+        var kindError = ErrorIdOf($"{row}.Kind");
+        var valueId = IdOf($"{row}.Value");
+        var valueError = ErrorIdOf($"{row}.Value");
+        var minSubtotalId = IdOf($"{row}.MinSubtotal");
+        var minSubtotalError = ErrorIdOf($"{row}.MinSubtotal");
+        var minSubtotalHint = HintIdOf($"{row}.MinSubtotal");
+        var labelId = IdOf($"{row}.Label");
+        var labelError = ErrorIdOf($"{row}.Label");
+        var labelHint = HintIdOf($"{row}.Label");
+
+        <fieldset class="entry">
+            <legend>Order promotion @(index + 1)</legend>
+
+            <div class="field">
+                <label for="@kindId">Discount type</label>
+                <InputSelect id="@kindId" name="@NameOf($"{row}.Kind")" @bind-Value="order.Kind"
+                             aria-describedby="@Describe(order, "Kind", kindError)">
+                    <option value="@LinePromotionForm.PercentOff">Percent off</option>
+                    <option value="@LinePromotionForm.AmountOff">Amount off</option>
+                </InputSelect>
+                <ValidationMessage For="() => order.Kind" id="@kindError" />
+            </div>
+
+            <div class="field">
+                <label for="@valueId">Value</label>
+                <InputNumber id="@valueId" name="@NameOf($"{row}.Value")" @bind-Value="order.Value"
+                             aria-describedby="@Describe(order, "Value", valueError)" />
+                <ValidationMessage For="() => order.Value" id="@valueError" />
+            </div>
+
+            <div class="field">
+                <label for="@minSubtotalId">Minimum subtotal</label>
+                <InputNumber id="@minSubtotalId" name="@NameOf($"{row}.MinSubtotal")" @bind-Value="order.MinSubtotal"
+                             aria-describedby="@Describe(order, "MinSubtotal", minSubtotalError, minSubtotalHint)" />
+                <p class="hint" id="@minSubtotalHint">The order subtotal needed before the discount applies. Use 0 for no minimum.</p>
+                <ValidationMessage For="() => order.MinSubtotal" id="@minSubtotalError" />
+            </div>
+
+            <div class="field">
+                <label for="@labelId">Label</label>
+                <InputText id="@labelId" name="@NameOf($"{row}.Label")" @bind-Value="order.Label"
+                           aria-describedby="@Describe(order, "Label", labelError, labelHint)" />
+                <p class="hint" id="@labelHint">Shown to shoppers. 1 to 60 characters, without &lt; or &gt;.</p>
+                <ValidationMessage For="() => order.Label" id="@labelError" />
+            </div>
+
+            <button type="submit" class="secondary" name="@DraftAction.FieldName" value="@DraftAction.RemoveValue(DraftInput.OrderPromotions, index)"
+                    aria-label="@($"Remove order promotion {index + 1}")">Remove</button>
+        </fieldset>
+    }
+
+    <ValidationMessage For="() => Form.OrderPromotions" id="@ErrorIdOf("OrderPromotions")" />
+    <button type="submit" class="secondary" name="@DraftAction.FieldName" value="@DraftAction.AddValue(DraftInput.OrderPromotions)">Add order promotion</button>
+</fieldset>
+
+@code {
+    [Parameter, EditorRequired]
+    public PromotionForm Form { get; set; } = default!;
+
+    [Parameter]
+    public IReadOnlyList<CatalogOption>? Types { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<CatalogOption>? Brands { get; set; }
+
+    [Parameter]
+    public IReadOnlyDictionary<int, string>? ItemNames { get; set; }
+}

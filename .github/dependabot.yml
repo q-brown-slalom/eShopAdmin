@@ -1,0 +1,47 @@
+version: 2
+registries:
+  public-nuget:
+    type: nuget-feed
+    url: https://api.nuget.org/v3/index.json
+updates:
+  - package-ecosystem: nuget
+    directory: "/"
+    registries:
+      - public-nuget
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      Aspire:
+        patterns:
+          - "Aspire.*"
+          - "Microsoft.Extensions.ServiceDiscovery.*"
+      Asp.Versioning:
+        patterns:
+          - "Asp.Versioning.*"
+      AspNetCore:
+        patterns:
+          - "Microsoft.AspNetCore.*"
+      MicrosoftExtensions:
+        patterns:
+          - "Microsoft.Extensions.*"
+      OpenTelemetry:
+        patterns:
+          - "OpenTelemetry.*"
+      MSTest:
+        patterns:
+          - "MSTest.*"
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      browser-testing:
+        dependency-type: development
+        patterns:
+          - "*"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly

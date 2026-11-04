@@ -1,0 +1,17 @@
+@inherits FieldsBase
+@using eShopAdmin.Rules
+
+<div class="field">
+    <label for="@IdOf("Policy")">Policy</label>
+    <InputSelect id="@IdOf("Policy")" name="@NameOf("Policy")" @bind-Value="Form.Policy"
+                 aria-describedby="@Describe(Form, "Policy", ErrorIdOf("Policy"))">
+        <option value="@ShortfallPolicyForm.AllOrNothing">All or nothing</option>
+        <option value="@ShortfallPolicyForm.PartialFulfilment">Partial fulfilment</option>
+    </InputSelect>
+    <ValidationMessage For="() => Form.Policy" id="@ErrorIdOf("Policy")" />
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public ShortfallPolicyForm Form { get; set; } = default!;
+}

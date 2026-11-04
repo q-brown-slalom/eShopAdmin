@@ -1,0 +1,69 @@
+@inherits FieldsBase
+@using eShopAdmin.Catalog
+@using eShopAdmin.Rules
+
+<fieldset class="list">
+    <legend>Price adjustments</legend>
+
+    @if (Form.Entries.Count == 0)
+    {
+        <p>No entries. Prices stay as they are.</p>
+    }
+
+    @for (var i = 0; i < Form.Entries.Count; i++)
+    {
+        var index = i;
+        var entry = Form.Entries[index];
+        var row = $"Entries[{index}]";
+        var modeId = IdOf($"{row}.Mode");
+        var modeError = ErrorIdOf($"{row}.Mode");
+        var valueId = IdOf($"{row}.Value");
+        var valueError = ErrorIdOf($"{row}.Value");
+        var valueHint = HintIdOf($"{row}.Value");
+
+        <fieldset class="entry">
+            <legend>Entry @(index + 1)</legend>
+
+            <TargetFields Form="entry.Target" NamePrefix="@NameOf($"{row}.Target")" Types="Types" Brands="Brands" ItemNames="ItemNames" />
+            <ValidationMessage For="() => entry.Target" id="@ErrorIdOf($"{row}.Target")" />
+
+            <div class="field">
+                <label for="@modeId">Adjustment</label>
+                <InputSelect id="@modeId" name="@NameOf($"{row}.Mode")" @bind-Value="entry.Mode"
+                             aria-describedby="@Describe(entry, "Mode", modeError)">
+                    <option value="@PriceAdjustmentEntryForm.PercentOff">Percent off</option>
+                    <option value="@PriceAdjustmentEntryForm.FixedPrice">Fixed price</option>
+                </InputSelect>
+                <ValidationMessage For="() => entry.Mode" id="@modeError" />
+            </div>
+
+            <div class="field">
+                <label for="@valueId">Value</label>
+                <InputNumber id="@valueId" name="@NameOf($"{row}.Value")" @bind-Value="entry.Value"
+                             aria-describedby="@Describe(entry, "Value", valueError, valueHint)" />
+                <p class="hint" id="@valueHint">A percentage for Percent off, or a price for Fixed price.</p>
+                <ValidationMessage For="() => entry.Value" id="@valueError" />
+            </div>
+
+            <button type="submit" class="secondary" name="@DraftAction.FieldName" value="@DraftAction.RemoveValue(DraftInput.Entries, index)"
+                    aria-label="@($"Remove entry {index + 1}")">Remove</button>
+        </fieldset>
+    }
+
+    <ValidationMessage For="() => Form.Entries" id="@ErrorIdOf("Entries")" />
+    <button type="submit" class="secondary" name="@DraftAction.FieldName" value="@DraftAction.AddValue(DraftInput.Entries)">Add entry</button>
+</fieldset>
+
+@code {
+    [Parameter, EditorRequired]
+    public PriceAdjustmentForm Form { get; set; } = default!;
+
+    [Parameter]
+    public IReadOnlyList<CatalogOption>? Types { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<CatalogOption>? Brands { get; set; }
+
+    [Parameter]
+    public IReadOnlyDictionary<int, string>? ItemNames { get; set; }
+}
