@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/eShopAdmin.AppHost/eShopAdmin.AppHost.csproj" />
+    <Project Path="src/eShopAdmin.ServiceDefaults/eShopAdmin.ServiceDefaults.csproj" />
+    <Project Path="src/eShopAdmin/eShopAdmin.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/eShopAdmin.AppHost.Tests/eShopAdmin.AppHost.Tests.csproj" />
+    <Project Path="tests/eShopAdmin.UnitTests/eShopAdmin.UnitTests.csproj" />
+  </Folder>
+</Solution>
