@@ -9,11 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddAdminAuthentication();
 
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddTransient<AccessTokenHandler>();
-builder.Services.AddHttpClient<BusinessRulesClient>(client => client.BaseAddress = new Uri("https+http://businessrules-api"))
-    .AddApiVersion(1.0)
-    .AddHttpMessageHandler<AccessTokenHandler>();
+builder.Services.AddBusinessRulesClient();
 
 builder.Services.AddRazorComponents();
 builder.Services.AddCascadingAuthenticationState();
