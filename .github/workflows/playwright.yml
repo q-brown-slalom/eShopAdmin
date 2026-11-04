@@ -84,7 +84,7 @@ jobs:
     - name: Show eShop AppHost log
       if: ${{ !cancelled() }}
       run: tail -n 200 "$RUNNER_TEMP/eshop-apphost.log" || true
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       if: always()
       with:
         name: playwright-report
