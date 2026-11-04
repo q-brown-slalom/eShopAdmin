@@ -1483,16 +1483,16 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin\\eShopAdmin.csproj",
+      "projectUniqueName": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin\\eShopAdmin.csproj",
       "projectName": "eShopAdmin",
-      "projectPath": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin\\eShopAdmin.csproj",
+      "projectPath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin\\eShopAdmin.csproj",
       "packagesPath": "C:\\Users\\q.brown\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\artifacts\\obj\\eShopAdmin\\",
+      "outputPath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\artifacts\\obj\\eShopAdmin\\",
       "projectStyle": "PackageReference",
       "centralPackageVersionsManagementEnabled": true,
       "CentralPackageTransitivePinningEnabled": true,
       "configFilePaths": [
-        "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\NuGet.Config",
+        "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\NuGet.Config",
         "C:\\Users\\q.brown\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
@@ -1507,8 +1507,8 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "projectReferences": {
-            "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj": {
-              "projectPath": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj"
+            "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj": {
+              "projectPath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj"
             }
           }
         }

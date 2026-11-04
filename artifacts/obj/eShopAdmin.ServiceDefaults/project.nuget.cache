@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+w7zy2tJy2s=",
+  "dgSpecHash": "+zs5cgWIMWk=",
   "success": true,
-  "projectFilePath": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj",
+  "projectFilePath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.ambientmetadata.application\\10.10.0\\microsoft.extensions.ambientmetadata.application.10.10.0.nupkg.sha512",
     "C:\\Users\\q.brown\\.nuget\\packages\\microsoft.extensions.compliance.abstractions\\10.10.0\\microsoft.extensions.compliance.abstractions.10.10.0.nupkg.sha512",

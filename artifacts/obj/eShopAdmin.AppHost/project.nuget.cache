@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "c5MfngUuXZY=",
+  "dgSpecHash": "cxu+2VkqytU=",
   "success": true,
-  "projectFilePath": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.AppHost\\eShopAdmin.AppHost.csproj",
+  "projectFilePath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.AppHost\\eShopAdmin.AppHost.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\q.brown\\.nuget\\packages\\aspire.hosting\\13.6.0\\aspire.hosting.13.6.0.nupkg.sha512",
     "C:\\Users\\q.brown\\.nuget\\packages\\aspire.hosting.apphost\\13.6.0\\aspire.hosting.apphost.13.6.0.nupkg.sha512",

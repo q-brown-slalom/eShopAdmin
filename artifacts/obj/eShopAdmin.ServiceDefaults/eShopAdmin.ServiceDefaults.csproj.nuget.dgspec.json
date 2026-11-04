@@ -1,22 +1,22 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj": {}
+    "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj": {}
   },
   "projects": {
-    "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj": {
+    "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj",
+        "projectUniqueName": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj",
         "projectName": "eShopAdmin.ServiceDefaults",
-        "projectPath": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj",
+        "projectPath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\src\\eShopAdmin.ServiceDefaults\\eShopAdmin.ServiceDefaults.csproj",
         "packagesPath": "C:\\Users\\q.brown\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\artifacts\\obj\\eShopAdmin.ServiceDefaults\\",
+        "outputPath": "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\artifacts\\obj\\eShopAdmin.ServiceDefaults\\",
         "projectStyle": "PackageReference",
         "centralPackageVersionsManagementEnabled": true,
         "CentralPackageTransitivePinningEnabled": true,
         "configFilePaths": [
-          "c:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\NuGet.Config",
+          "C:\\Users\\q.brown\\OneDrive - Slalom\\Projects\\AE-Immersion\\eShopAdmin\\NuGet.Config",
           "C:\\Users\\q.brown\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
