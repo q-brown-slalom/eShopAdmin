@@ -33,7 +33,7 @@ The AppHost declares the eShop services as parameters. Override them (for exampl
 with `Parameters__identity-url`) when eShop runs somewhere else.
 
 | Parameter | Default |
-|-----------|---------|
+| --------- | ------- |
 | `identity-url` | `https://localhost:5243` |
 | `businessrules-url` | `http://localhost:5230` |
 | `catalog-url` | `http://localhost:5222` |
@@ -58,7 +58,7 @@ npm run test:e2e
 ```
 
 | Variable | Default | Purpose |
-|----------|---------|---------|
+| -------- | ------- | ------- |
 | `ADMIN_URL` | `https://localhost:7250` | Where eShopAdmin is served |
 | `CATALOG_URL` | `http://localhost:5222` | Where Catalog.API listens (the draft editor spec compares its type picker with it) |
 | `PUBLISHER_USERNAME` | `alice` | User with the `RulesPublisher` role |
@@ -67,3 +67,21 @@ npm run test:e2e
 | `PUBLISHER_DISPLAY_NAME` | `Alice` | Name shown in the header for the publisher |
 
 Playwright starts the AppHost itself unless it is already running.
+
+## CI
+
+Three workflows in `.github/workflows` run on pull requests (the first two also on pushes to `main`):
+
+- `pr-validation.yml` builds and tests `eShopAdmin.slnx` (skipped for Markdown-only changes).
+- `markdownlint.yml` lints all Markdown with `.markdownlint.json`.
+- `playwright.yml` runs the E2E tests against both AppHosts in one job:
+  1. It checks out eShop (repository variable `ESHOP_REPOSITORY`, branch `main`) into `eshop/`.
+  2. It starts eShop's AppHost in the background with `ESHOP_USE_HTTP_ENDPOINTS=1` and
+     `Parameters__eshopadmin-url=http://localhost:5250`, then waits up to 5 minutes for Identity.API
+     (`http://localhost:5223/.well-known/openid-configuration`) and BusinessRules.API
+     (`http://localhost:5230/health`).
+  3. `npm run test:e2e` starts eShopAdmin's AppHost through Playwright's `webServer`, with
+     `Parameters__identity-url=http://localhost:5223`, and signs in as `alice` and `bob`.
+  4. The `playwright-report/` folder is uploaded as an artifact for 30 days.
+
+The two AppHosts use different dashboard, OTLP and resource-service ports, so they run side by side.
